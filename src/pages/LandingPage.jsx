@@ -2,8 +2,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { subjects } from '../data/courseData';
-// import MascotImage from '../assets/images/mascot.png'; // Example mascot
+import HeroSection from '../components/landing/HeroSection'; // Import HeroSection
 
+// SubjectCard component (assuming it's defined here or imported)
 const SubjectCard = ({ subject }) => (
   <motion.div
     whileHover={{ scale: 1.05, y: -5 }}
@@ -20,33 +21,47 @@ const SubjectCard = ({ subject }) => (
 
 const LandingPage = () => {
   return (
-    <div className="text-center">
-      <motion.div
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="mb-12"
-      >
-        {/* <img src={MascotImage} alt="Friendly Mascot" className="mx-auto h-40 w-auto mb-4 animate-subtle-bounce" /> */}
-        <h1 className="text-5xl font-bold text-brand-primary dark:text-brand-secondary mb-4">Welcome to LearnSphere!</h1>
-        <p className="text-xl text-gray-600 dark:text-gray-300">Your fun journey to knowledge starts here.</p>
-      </motion.div>
+    // Remove text-center if HeroSection handles its own text alignment
+    // No overflow-hidden on this top-level div if hero section needs to "spill" for parallax.
+    <div>
+      <HeroSection />
 
-      <motion.div
-        className="grid md:grid-cols-2 lg:grid-cols-3 gap-8"
-        initial="hidden"
-        animate="visible"
-        variants={{
-          hidden: {},
-          visible: { transition: { staggerChildren: 0.1 } }
-        }}
-      >
-        {subjects.map((subject) => (
-          <motion.div key={subject.id} variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }}>
-             <SubjectCard subject={subject} />
+      {/* This section is where the "Let's Explore!" button will scroll to */}
+      <section id="subjects-section" className="py-16 md:py-24 bg-background dark:bg-gray-800"> {/* Added background for contrast */}
+        <div className="container mx-auto px-4 text-center"> {/* Centering content */}
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }} // Animate when this scrolls into view
+            viewport={{ once: true, amount: 0.3 }} // Trigger when 30% is visible
+            transition={{ duration: 0.6 }}
+            className="text-4xl md:text-5xl font-bold text-brand-primary dark:text-brand-secondary mb-12 md:mb-16"
+          >
+            Choose Your Adventure!
+          </motion.h2>
+          <motion.div
+            className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.1 }} // Stagger children when 10% of grid is visible
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.15 } }
+            }}
+          >
+            {subjects.map((subject) => (
+              <motion.div
+                key={subject.id}
+                variants={{
+                  hidden: { opacity: 0, y: 30, scale: 0.95 },
+                  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.5, ease: "easeOut" }}
+                }}
+              >
+                 <SubjectCard subject={subject} />
+              </motion.div>
+            ))}
           </motion.div>
-        ))}
-      </motion.div>
+        </div>
+      </section>
     </div>
   );
 };
