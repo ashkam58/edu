@@ -1,180 +1,152 @@
-// src/pages/LessonPage.jsx
-import React, { useEffect, useState } from 'react';
+// src/pages/ChapterPage.jsx
+import React, { useEffect, useState } from 'react'; // Make sure React and useState are imported
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { getLessonBySlugs, getChapterBySlugs, getSubjectBySlug } from '../data/courseData';
-import { useProgress } from '../contexts/ProgressContext';
+import { getChapterBySlugs, getSubjectBySlug } from '../data/courseData';
+import { PlayCircleIcon, DocumentTextIcon, QuestionMarkCircleIcon, CheckCircleIcon as OutlineCheckCircleIcon } from '@heroicons/react/24/outline';
+import { CheckCircleIcon as SolidCheckCircleIcon } from '@heroicons/react/24/solid';
 import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import NotFoundPage from './NotFoundPage';
-// ==========================================================================
-// == THE CRITICAL IMPORT LINE FOR HEROICONS SOLID ICONS ==
-// Make ABSOLUTELY sure this line is present and typed EXACTLY like this.
-import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
-// ==========================================================================
+import { useProgress } from '../contexts/ProgressContext';
 
-// For debugging: Log the imported icon right after import
-// Open your browser's developer console to see this output when the page loads.
-console.log('LessonPage: Imported CheckCircleIcon:', CheckCircleIcon);
+// ... (iconMap and LessonListItem component remain the same) ...
+const iconMap = {
+  video: <PlayCircleIcon className="h-6 w-6 text-brand-primary" />,
+  text: <DocumentTextIcon className="h-6 w-6 text-brand-accent" />,
+  quiz: <QuestionMarkCircleIcon className="h-6 w-6 text-purple-500" />,
+};
 
-const LessonPage = () => {
-  const { subjectSlug, chapterSlug, lessonSlug } = useParams();
-  const lesson = getLessonBySlugs(subjectSlug, chapterSlug, lessonSlug);
-  const chapter = getChapterBySlugs(subjectSlug, chapterSlug);
+const LessonListItem = ({ lesson, subjectSlug, chapterSlug, isCompleted }) => {
+  // Add a log inside LessonListItem as well
+  // console.log('LessonListItem rendering lesson:', lesson?.name, 'isCompleted:', isCompleted);
+  if (!lesson || !lesson.slug) {
+    console.error("LessonListItem received invalid lesson data:", lesson);
+    return <div className="text-red-500 p-4">Error: Invalid lesson data.</div>;
+  }
+  return (
+    <motion.div /* ... */ >
+      <Link
+        to={`/subjects/${subjectSlug}/chapters/${chapterSlug}/lessons/${lesson.slug}`}
+        className="flex items-center justify-between p-4 mb-3 bg-white dark:bg-gray-700 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+      >
+        <div className="flex items-center">
+          {iconMap[lesson.type] || <DocumentTextIcon className="h-6 w-6 text-gray-500" />}
+          <span className="ml-3 font-medium text-gray-800 dark:text-gray-100">{lesson.name || "Unnamed Lesson"}</span>
+        </div>
+        {isCompleted && <OutlineCheckCircleIcon className="h-6 w-6 text-green-500" />}
+      </Link>
+    </motion.div>
+  );
+};
+
+
+const ChapterPage = () => {
+  const { subjectSlug, chapterSlug } = useParams();
+
+  // --- ADD DETAILED LOGS HERE ---
+  console.log('ChapterPage PARAMS:', { subjectSlug, chapterSlug });
+
   const subject = getSubjectBySlug(subjectSlug);
-  const { markAsComplete, isComplete, checkAndCompleteChapter } = useProgress();
+  console.log('ChapterPage - Found subject:', subject ? subject.name : 'Subject NOT FOUND');
+
+  const chapter = getChapterBySlugs(subjectSlug, chapterSlug);
+  console.log('ChapterPage - Found chapter:', chapter ? chapter.name : 'Chapter NOT FOUND');
+  if (chapter) {
+    console.log('ChapterPage - Chapter lessons:', chapter.lessons);
+  }
+  // --- END OF DETAILED LOGS ---
+
+  const { isComplete, markAsComplete, checkAndCompleteChapter } = useProgress();
   const [showConfetti, setShowConfetti] = useState(false);
   const { width, height } = useWindowSize();
-  const navigate = useNavigate();
+  // const navigate = useNavigate(); // Not used in the current snippet, remove if not needed elsewhere
 
   useEffect(() => {
-    // For debugging: Check if CheckCircleIcon is available inside useEffect
-    if (typeof CheckCircleIcon !== 'undefined') {
-      console.log('LessonPage useEffect: CheckCircleIcon is defined here.');
-    } else {
-      console.error('LessonPage useEffect: CheckCircleIcon is UNDEFINED here.');
-    }
-
-    if (lesson && !isComplete(lesson.id)) {
-      if (lesson.type === 'text' || lesson.type === 'video') {
-        markAsComplete('lesson', lesson.id);
+    if (chapter) {
+      const chapterJustCompleted = checkAndCompleteChapter(chapter);
+      if (chapterJustCompleted) {
         setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 3000);
-        if (chapter) {
-          const chapterJustCompleted = checkAndCompleteChapter(chapter);
-          if (chapterJustCompleted) {
-            console.log("Chapter completed by finishing this lesson!");
-          }
-        }
+        setTimeout(() => setShowConfetti(false), 5000);
       }
     }
-  }, [lesson, isComplete, markAsComplete, chapter, checkAndCompleteChapter, subjectSlug, chapterSlug, lessonSlug]);
+  }, [chapter, isComplete, checkAndCompleteChapter]);
 
-  if (!lesson || !chapter || !subject) {
-    return <NotFoundPage message="Lesson, chapter, or subject not found." />;
+
+  if (!subject) {
+    return <NotFoundPage message={`Subject "${subjectSlug}" not found.`} />;
+  }
+  if (!chapter) {
+    // This is a crucial check. If chapter is not found, it will render NotFoundPage.
+    return <NotFoundPage message={`Chapter "${chapterSlug}" under subject "${subject.name}" not found.`} />;
+  }
+  // Add a check for chapter.lessons
+  if (!chapter.lessons || !Array.isArray(chapter.lessons)) {
+    console.error("Chapter data is missing or has an invalid 'lessons' array:", chapter);
+    return <NotFoundPage message={`Error: Chapter "${chapter.name}" has invalid lesson data.`} />;
   }
 
-  const currentIndex = chapter.lessons.findIndex(l => l.id === lesson.id);
-  const prevLesson = currentIndex > 0 ? chapter.lessons[currentIndex - 1] : null;
-  const nextLesson = currentIndex < chapter.lessons.length - 1 ? chapter.lessons[currentIndex + 1] : null;
 
-  const handleQuizSubmit = () => {
-    markAsComplete('lesson', lesson.id);
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 3000);
-    if (chapter) checkAndCompleteChapter(chapter);
-    if (nextLesson) {
-      navigate(`/subjects/${subjectSlug}/chapters/${chapterSlug}/lessons/${nextLesson.slug}`);
-    } else {
-      navigate(`/subjects/${subjectSlug}/chapters/${chapterSlug}`);
-    }
-  };
+  const allLessonsDone = chapter.lessons.every(lesson => isComplete(lesson.id));
 
-  const renderLessonContent = () => {
-    switch (lesson.type) {
-      case 'text':
-        return (
-          <div
-            className="prose dark:prose-invert lg:prose-xl max-w-none font-serif reading-content bg-background-light dark:bg-gray-800 p-6 md:p-8 rounded-lg shadow-inner"
-            dangerouslySetInnerHTML={{ __html: lesson.content }}
-          />
-        );
-      case 'video':
-        return (
-          <div className="aspect-w-16 aspect-h-9 max-w-3xl mx-auto bg-black rounded-lg overflow-hidden shadow-xl">
-            <iframe
-              src={lesson.videoUrl}
-              title={lesson.name}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="w-full h-full"
-            ></iframe>
-          </div>
-        );
-      case 'quiz':
-        return (
-          <div className="reading-content bg-background-light dark:bg-gray-800 p-6 md:p-8 rounded-lg shadow">
-            <h2 className="text-2xl font-semibold mb-4 font-sans">Quiz: {lesson.name}</h2>
-            {lesson.questions?.map((q, index) => (
-              <div key={index} className="mb-4 p-3 border border-gray-300 dark:border-gray-600 rounded">
-                <p className="font-medium">{q.q}</p>
-                <p className="text-sm text-gray-500">Answer: {q.a} (For dev only)</p>
-              </div>
-            ))}
-            {!isComplete(lesson.id) ? (
-              <button
-                onClick={handleQuizSubmit}
-                className="mt-6 bg-brand-primary text-white font-semibold py-2 px-4 rounded hover:bg-opacity-90"
-              >
-                Submit Quiz (Mark as Complete)
-              </button>
-            ) : (
-              <p className="mt-6 text-green-600 font-semibold">Quiz Completed!</p>
-            )}
-          </div>
-        );
-      default:
-        return <p>Unsupported lesson type.</p>;
+  const handleMarkChapterComplete = () => {
+    if (!isComplete(chapter.id) && allLessonsDone) {
+      markAsComplete('chapter', chapter.id);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000);
+    } else if (!allLessonsDone) {
+        alert("Please complete all lessons in this chapter first!");
     }
   };
 
   return (
-    <div className="relative">
-      {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={isComplete(lesson.id) ? 150 : 50} />}
-      <div className="mb-4">
-        <Link to={`/subjects/${subjectSlug}/chapters/${chapterSlug}`} className="text-sm text-brand-primary hover:underline">
-          ← Back to {chapter.name}
-        </Link>
-        <h1 className="text-3xl font-bold my-2 text-center">{lesson.name}</h1>
+    <div>
+      {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={300} />}
+      <div className="mb-6">
+        <Link to={`/subjects/${subjectSlug}`} className="text-sm text-brand-primary hover:underline">← Back to {subject.name}</Link>
+        <h1 className="text-3xl font-bold mt-2">{chapter.name}</h1>
+        <p className="text-gray-600 dark:text-gray-400">{chapter.description}</p>
       </div>
 
-      <motion.div
-        key={lesson.id}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.4 }}
-        className="mb-8"
-      >
-        {renderLessonContent()}
-      </motion.div>
-
-      <div className="flex justify-between items-center mt-10 max-w-3xl mx-auto">
-        {prevLesson ? (
-          <Link
-            to={`/subjects/${subjectSlug}/chapters/${chapterSlug}/lessons/${prevLesson.slug}`}
-            className="flex items-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors"
-          >
-            <ArrowLeftIcon className="h-5 w-5 mr-2" />
-            Previous
-          </Link>
-        ) : <div /> /* Placeholder for spacing */}
-        {nextLesson ? (
-          <Link
-            to={`/subjects/${subjectSlug}/chapters/${chapterSlug}/lessons/${nextLesson.slug}`}
-            className="flex items-center bg-brand-primary hover:bg-opacity-90 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-          >
-            Next
-            <ArrowRightIcon className="h-5 w-5 ml-2" />
-          </Link>
-        ) : <div /> /* Placeholder for spacing */}
+      <div className="mb-6">
+        {/* Defensive mapping: check if chapter.lessons is an array */}
+        {Array.isArray(chapter.lessons) && chapter.lessons.map((lesson) => {
+          // Add a null check for lesson itself and key properties before rendering LessonListItem
+          if (!lesson || !lesson.id || !lesson.slug || !lesson.name) {
+            console.error("Skipping rendering of an invalid lesson object:", lesson, "in chapter:", chapter.name);
+            return null; // Skip rendering this malformed lesson
+          }
+          return (
+            <LessonListItem
+              key={lesson.id} // Ensure lesson.id is unique and present
+              lesson={lesson}
+              subjectSlug={subjectSlug}
+              chapterSlug={chapterSlug}
+              isCompleted={isComplete(lesson.id)}
+            />
+          );
+        })}
+         {(!Array.isArray(chapter.lessons) || chapter.lessons.length === 0) && (
+            <p className="text-gray-500 dark:text-gray-400">No lessons available in this chapter yet.</p>
+        )}
       </div>
 
-      {/* This is Line 159 or thereabouts */}
-      {isComplete(lesson.id) && (
-        <p className="text-center mt-4 text-green-600 dark:text-green-400 font-semibold">
-          {/* Check if CheckCircleIcon is defined before trying to render it */}
-          {typeof CheckCircleIcon !== 'undefined' ? (
-            <CheckCircleIcon className="h-5 w-5 inline mr-1" />
-          ) : (
-            <span>(Icon Error)</span> /* Placeholder if icon is undefined */
-          )}
-          Lesson Completed!
+      {!isComplete(chapter.id) && allLessonsDone && (
+        <motion.button
+            onClick={handleMarkChapterComplete}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-brand-secondary text-white font-semibold py-2 px-6 rounded-lg shadow hover:bg-opacity-90 transition-all"
+        >
+            Mark Chapter as Complete & Get Confetti!
+        </motion.button>
+      )}
+       {isComplete(chapter.id) && (
+        <p className="text-lg font-semibold text-green-600 dark:text-green-400 flex items-center">
+          <SolidCheckCircleIcon className="h-6 w-6 mr-2"/> Chapter Completed! Well done!
         </p>
       )}
     </div>
   );
 };
-
-export default LessonPage;
+export default ChapterPage;
