@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-background text-text-light dark:bg-background-dark dark:text-text-dark font-sans transition-colors duration-300;
+}
+
+.highlight {
+  /* Example: apply this class to key terms */
+  @apply px-1 rounded;
+}
+.highlight-pink { @apply bg-pastel-pink text-gray-700; }
+.highlight-blue { @apply bg-pastel-blue text-gray-700; }
+/* ... other pastel highlight classes */
+
+/* For better focus on reading areas */
+.reading-content {
+  @apply max-w-2xl mx-auto px-4;
+}
