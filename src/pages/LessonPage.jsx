@@ -8,6 +8,7 @@ import { useProgress } from '../contexts/ProgressContext'; // Adjust path if nee
 import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import NotFoundPage from './NotFoundPage';
+import Sparkle from 'react-sparkle'; // npm install react-sparkle
 
 // Heroicons for navigation
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
@@ -147,81 +148,122 @@ const LessonPage = () => {
     }
   };
 
+  const funColors = [
+    "from-pink-100 via-blue-100 to-green-100",
+    "from-yellow-100 via-pink-100 to-blue-100",
+    "from-green-100 via-blue-100 to-purple-100"
+  ];
+  const randomColor = funColors[Math.floor(Math.random() * funColors.length)];
+
+  const mascotList = [
+    { emoji: "🦄", msg: "You’re magical!" },
+    { emoji: "🐻", msg: "Bear hugs for learning!" },
+    { emoji: "🦊", msg: "Foxy move, keep going!" },
+    { emoji: "🐧", msg: "Cool as a penguin!" },
+    { emoji: "🐯", msg: "Roar! You’re a math tiger!" }
+  ];
+  const mascot = mascotList[Math.floor(Math.random() * mascotList.length)];
+
   return (
-    <div className="relative pb-16"> {/* Added padding-bottom for floating nav */}
+    <div className={`relative pb-16 min-h-screen bg-gradient-to-br ${randomColor} transition-all duration-1000`}>
+      {/* Fun floating shapes for background */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute top-10 left-10 w-24 h-24 bg-pink-200 rounded-full opacity-30 animate-bounce-slow" />
+        <div className="absolute bottom-20 right-20 w-32 h-32 bg-blue-200 rounded-full opacity-30 animate-pulse-slow" />
+        <div className="absolute top-1/2 left-1/2 w-16 h-16 bg-yellow-200 rounded-full opacity-20 animate-spin-slow" />
+      </div>
+
       {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={150} />}
-      <div className="mb-4">
+      {/* Sparkle effect when lesson is complete */}
+      {isComplete(lesson.id) && (
+        <Sparkle color="gold" count={30} minSize={7} maxSize={18} fadeOutSpeed={15} overflowPx={0} />
+      )}
+
+      {/* Animated mascot and motivational message */}
+      <motion.div
+        initial={{ scale: 0.7, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 1, type: "spring", bounce: 0.4 }}
+        className="flex flex-col items-center justify-center mt-2 mb-2 z-10"
+      >
+        <span className="text-5xl drop-shadow-lg animate-bounce">{mascot.emoji}</span>
+        <span className="text-lg font-bold text-brand-primary mt-1">{mascot.msg}</span>
+      </motion.div>
+
+      <div className="mb-4 z-10 relative">
         <Link to={`/subjects/${subjectSlug}/chapters/${chapterSlug}`} className="text-sm text-brand-primary hover:underline">
           ← Back to {chapter.name}
         </Link>
-        <h1 className="text-3xl font-bold my-2 text-center">{lesson.name}</h1>
+        <h1 className="text-3xl font-bold my-2 text-center drop-shadow-md">{lesson.name}</h1>
       </div>
 
       <motion.div
-        key={lesson.id} // Ensures re-render & animation on lesson change
-        initial={{ opacity: 0, y: 20 }}
+        key={lesson.id}
+        initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }} // Optional: for transitions between lessons
-        transition={{ duration: 0.4 }}
-        className="mb-8"
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.7, type: "spring", bounce: 0.2 }}
+        className="mb-8 z-10 relative"
       >
         {renderLessonContent()}
       </motion.div>
 
       {isComplete(lesson.id) && (
-        <p className="text-center mt-6 mb-4 text-green-600 dark:text-green-400 font-semibold flex items-center justify-center">
+        <motion.p
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="text-center mt-6 mb-4 text-green-600 dark:text-green-400 font-semibold flex items-center justify-center z-10 relative"
+        >
           <CheckCircleIconMUI className="mr-1" fontSize="small" />
-          Lesson Completed!
-        </p>
+          Lesson Completed! You’re a star! ⭐
+        </motion.p>
       )}
 
-      {/* --- Navigation Buttons (Improved for clarity) --- */}
-      <div className="flex justify-between items-center mt-10 max-w-3xl mx-auto px-4">
+      {/* --- Navigation Buttons --- */}
+      <div className="flex justify-between items-center mt-10 max-w-3xl mx-auto px-4 z-10 relative">
         {prevLesson ? (
           <Link
             to={`/subjects/${subjectSlug}/chapters/${chapterSlug}/lessons/${prevLesson.slug}`}
-            className="flex items-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md"
+            className="flex items-center bg-pink-300 dark:bg-pink-600 hover:bg-pink-400 dark:hover:bg-pink-700 text-gray-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md"
             title={`Previous: ${prevLesson.name}`}
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Previous
           </Link>
-        ) : <div className="w-1/3" /> /* Placeholder for spacing, ensures Next button aligns right if no Prev */}
-        
-        {/* "Mark as Complete" button for text/video if not auto-completed, or if user wants to re-confirm */}
-        {/* This is an example if you don't want auto-completion for text/video */}
-        {/* {(lesson.type === 'text' || lesson.type === 'video') && !isComplete(lesson.id) && (
-          <button
-            onClick={handleGenericLessonCompletion}
-            className="bg-brand-secondary text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md mx-auto"
-          >
-            Mark as Complete
-          </button>
-        )} */}
-
+        ) : <div className="w-1/3" />}
         {nextLesson ? (
           <Link
             to={`/subjects/${subjectSlug}/chapters/${chapterSlug}/lessons/${nextLesson.slug}`}
-            className="flex items-center bg-brand-primary hover:bg-opacity-90 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md"
+            className="flex items-center bg-blue-400 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md"
             title={`Next: ${nextLesson.name}`}
           >
             Next
             <ArrowRightIcon className="h-5 w-5 ml-2" />
           </Link>
         ) : (
-          // If no next lesson, but current lesson is complete, offer to go back to chapter
           isComplete(lesson.id) ? (
             <Link
               to={`/subjects/${subjectSlug}/chapters/${chapterSlug}`}
-              className="flex items-center bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md"
+              className="flex items-center bg-green-400 hover:bg-green-500 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md"
               title={`Back to chapter: ${chapter.name}`}
             >
               Back to Chapter
-              {/* <ArrowRightIcon className="h-5 w-5 ml-2" /> // Optional: use a different icon like a list icon */}
             </Link>
-          ) : <div className="w-1/3" /> /* Placeholder if not complete and no next lesson */
+          ) : <div className="w-1/3" />
         )}
       </div>
+      {/* Soft animated footer for encouragement */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2, delay: 0.5 }}
+        className="fixed bottom-2 left-0 w-full text-center z-20 pointer-events-none"
+      >
+        <span className="inline-block bg-white/80 dark:bg-gray-900/80 text-brand-primary font-bold px-4 py-2 rounded-full shadow-lg animate-pulse-slow">
+          Keep going, Dear! Every lesson makes you smarter! 🌈
+        </span>
+      </motion.div>
     </div>
   );
 };
