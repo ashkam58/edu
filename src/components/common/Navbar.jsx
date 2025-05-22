@@ -2,15 +2,20 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import DarkModeToggle from "./DarkModeToggle";
-
-const navLinks = [
-  { name: 'Home', to: '/' },
-  { name: 'Math', to: '/subjects/mathematics' },
-  // Add more static links or map dynamic subjects if needed
-];
+import { subjects } from "../../data/courseData"; // Adjust path if needed
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [subjectsOpen, setSubjectsOpen] = useState(false);
+  const [gamesOpen, setGamesOpen] = useState(false);
+
+  // Example games array (replace with your real games)
+  const games = [
+    { name: "Math Game", to: "/games/math" },
+    { name: "Logic Game", to: "/games/logic" },
+    { name: "AI Quiz", to: "/games/ai" },
+    { name: "Typing Game", to: "/games/typing" }, // <-- Add this line
+  ];
 
   return (
     <nav className="sticky top-0 w-full bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 shadow-xl z-50">
@@ -37,27 +42,72 @@ const Navbar = () => {
 
           {/* Desktop Links */}
           <div className="hidden md:flex items-center space-x-6">
-            {navLinks.map((link) => (
-              <motion.div
-                key={link.to}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.9 }}
-                className="relative"
-              >
-                <Link
-                  to={link.to}
-                  className="text-white font-medium px-3 py-2 rounded-md transition-colors"
-                >
-                  {link.name}
-                </Link>
-                <motion.span
-                  layoutId="underline"
-                  className="absolute left-0 bottom-0 h-0.5 bg-white w-full opacity-0"
-                  whileHover={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                />
-              </motion.div>
-            ))}
+            <Link to="/" className="text-white font-medium px-3 py-2 rounded-md transition-colors">Home</Link>
+            
+            {/* Subjects Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setSubjectsOpen(true)}
+              onMouseLeave={() => setSubjectsOpen(false)}
+            >
+              <button className="text-white font-medium px-3 py-2 rounded-md transition-colors">
+                Subjects
+              </button>
+              <AnimatePresence>
+                {subjectsOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded shadow-lg z-50"
+                  >
+                    {subjects.map((subject) => (
+                      <Link
+                        key={subject.id}
+                        to={`/subjects/${subject.slug}`}
+                        className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setSubjectsOpen(false)}
+                      >
+                        {subject.name}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Games Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setGamesOpen(true)}
+              onMouseLeave={() => setGamesOpen(false)}
+            >
+              <button className="text-white font-medium px-3 py-2 rounded-md transition-colors">
+                Games
+              </button>
+              <AnimatePresence>
+                {gamesOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded shadow-lg z-50"
+                  >
+                    {games.map((game) => (
+                      <Link
+                        key={game.to}
+                        to={game.to}
+                        className="block px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setGamesOpen(false)}
+                      >
+                        {game.name}
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <DarkModeToggle />
           </div>
 
@@ -103,16 +153,91 @@ const Navbar = () => {
             className="md:hidden overflow-hidden bg-white dark:bg-gray-800"
           >
             <div className="flex flex-col px-4 pt-2 pb-4 space-y-2">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  onClick={() => setMenuOpen(false)}
-                  className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition-colors"
+              <Link
+                to="/"
+                onClick={() => setMenuOpen(false)}
+                className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition-colors"
+              >
+                Home
+              </Link>
+
+              {/* Subjects Mobile Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setSubjectsOpen(!subjectsOpen)}
+                  className="flex justify-between items-center w-full text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition-colors"
                 >
-                  {link.name}
-                </Link>
-              ))}
+                  Subjects
+                  <motion.span
+                    className={`ml-2 transition-transform ${
+                      subjectsOpen ? "rotate-180" : ""
+                    }`}
+                  >
+                    ▼
+                  </motion.span>
+                </button>
+                <AnimatePresence>
+                  {subjectsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="flex flex-col space-y-2 mt-2"
+                    >
+                      {subjects.map((subject) => (
+                        <Link
+                          key={subject.id}
+                          to={`/subjects/${subject.slug}`}
+                          onClick={() => setMenuOpen(false)}
+                          className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition-colors"
+                        >
+                          {subject.name}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Games Mobile Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setGamesOpen(!gamesOpen)}
+                  className="flex justify-between items-center w-full text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition-colors"
+                >
+                  Games
+                  <motion.span
+                    className={`ml-2 transition-transform ${
+                      gamesOpen ? "rotate-180" : ""
+                    }`}
+                  >
+                    ▼
+                  </motion.span>
+                </button>
+                <AnimatePresence>
+                  {gamesOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="flex flex-col space-y-2 mt-2"
+                    >
+                      {games.map((game) => (
+                        <Link
+                          key={game.to}
+                          to={game.to}
+                          onClick={() => setMenuOpen(false)}
+                          className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 px-3 py-2 rounded-md text-base font-medium transition-colors"
+                        >
+                          {game.name}
+                        </Link>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
           </motion.div>
         )}

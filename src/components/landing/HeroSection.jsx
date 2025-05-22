@@ -54,9 +54,10 @@ const HeroSection = () => {
   return (
     <section
       ref={targetRef}
-      // Increased height to allow more scroll for parallax. Adjust as needed.
-      // The extra space at the bottom is to ensure the section aniamtes for its full intended scroll length.
-      className="relative h-[180vh] md:h-[160vh] overflow-hidden bg-gradient-to-br from-sky-400 via-cyan-300 to-emerald-300"
+      className="relative h-[180vh] md:h-[160vh] overflow-hidden 
+        bg-gradient-to-br from-sky-400 via-cyan-300 to-emerald-300
+        dark:from-gray-900 dark:via-indigo-900 dark:to-slate-800
+      "
     >
       {/* Decorative Elements - Parallaxed */}
       <motion.div
@@ -97,8 +98,8 @@ const HeroSection = () => {
           initial={{ opacity: 0, y: -50, rotate: -5 }}
           animate={{ opacity: 1, y: 0, rotate: 0 }}
           transition={{ duration: 0.8, delay: 0.3, type: 'spring', stiffness: 100 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 drop-shadow-xl text-yellow-300"
-          style={{ fontFamily: "'Lilita One', cursive" }} // A very playful font
+          className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 drop-shadow-xl text-yellow-300 dark:text-indigo-300"
+          style={{ fontFamily: "'Lilita One', cursive" }}
         >
           LearnSphere!
         </motion.h1>

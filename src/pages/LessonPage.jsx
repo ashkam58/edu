@@ -1,5 +1,5 @@
 // src/pages/LessonPage.jsx
-import React, { useEffect, useState } from 'react'; // Import useState
+import React, { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 
 import { motion } from 'framer-motion';
@@ -13,13 +13,10 @@ import NotFoundPage from './NotFoundPage';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 
 // Material-UI Icon for completion
-// At the top of src/pages/LessonPage.jsx
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-// If you haven't installed Material-UI icons yet:
+import CheckCircleIconMUI from '@mui/icons-material/CheckCircle'; // Renamed to avoid conflict if you use Heroicons CheckCircleIcon
+// If you haven't installed Material-UI icons yet: npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 
 
-// Assuming you might want to use the LessonNavigation component
-// import LessonNavigation from '../../components/lesson/LessonNavigation'; // Uncomment and adjust path if using
 
 const LessonPage = () => {
   const { subjectSlug, chapterSlug, lessonSlug } = useParams();
@@ -27,25 +24,28 @@ const LessonPage = () => {
   const chapter = getChapterBySlugs(subjectSlug, chapterSlug);
   const subject = getSubjectBySlug(subjectSlug);
   const { markAsComplete, isComplete, checkAndCompleteChapter } = useProgress();
-  const [showConfetti, setShowConfetti] = useState(false); // Use imported useState
+  const [showConfetti, setShowConfetti] = useState(false);
   const { width, height } = useWindowSize();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Auto-complete for text and video lessons on view
     if (lesson && !isComplete(lesson.id)) {
       if (lesson.type === 'text' || lesson.type === 'video') {
         markAsComplete('lesson', lesson.id);
         setShowConfetti(true);
-        setTimeout(() => setShowConfetti(false), 3000);
+        setTimeout(() => setShowConfetti(false), 3000); // Confetti duration
         if (chapter) {
           const chapterJustCompleted = checkAndCompleteChapter(chapter);
           if (chapterJustCompleted) {
             console.log("Chapter completed by finishing this lesson!");
+            // Optionally trigger chapter completion confetti here too, or navigate
           }
         }
       }
     }
-  }, [lesson, isComplete, markAsComplete, chapter, checkAndCompleteChapter, subjectSlug, chapterSlug, lessonSlug]); // Added more dependencies
+  }, [lesson, isComplete, markAsComplete, chapter, checkAndCompleteChapter]);
+  // Removed subjectSlug, chapterSlug, lessonSlug from deps as 'lesson' already depends on them.
 
   if (!lesson || !chapter || !subject) {
     return <NotFoundPage message="Lesson, chapter, or subject not found." />;
@@ -55,19 +55,32 @@ const LessonPage = () => {
   const prevLesson = currentIndex > 0 ? chapter.lessons[currentIndex - 1] : null;
   const nextLesson = currentIndex < chapter.lessons.length - 1 ? chapter.lessons[currentIndex + 1] : null;
 
-  const handleQuizSubmit = () => {
-    markAsComplete('lesson', lesson.id);
-    setShowConfetti(true);
-    setTimeout(() => setShowConfetti(false), 3000);
-    if (chapter) checkAndCompleteChapter(chapter);
+  const completeAndNavigate = () => {
     if (nextLesson) {
       navigate(`/subjects/${subjectSlug}/chapters/${chapterSlug}/lessons/${nextLesson.slug}`);
     } else {
-      navigate(`/subjects/${subjectSlug}/chapters/${chapterSlug}`);
+      navigate(`/subjects/${subjectSlug}/chapters/${chapterSlug}`); // Back to chapter page if no next lesson
     }
   };
 
+  
+
+  const handleGenericLessonCompletion = () => {
+    if (!isComplete(lesson.id)) {
+      markAsComplete('lesson', lesson.id);
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 3000);
+      if (chapter) checkAndCompleteChapter(chapter);
+    }
+    completeAndNavigate();
+  };
+
+  // Specific handler for typing lessons
+
+
   const renderLessonContent = () => {
+    if (!lesson) return <p>Loading lesson content...</p>; // Should be caught by the guard above
+
     switch (lesson.type) {
       case 'text':
         return (
@@ -105,7 +118,6 @@ const LessonPage = () => {
                           name={`question-${index}`}
                           value={option}
                           className="mr-3 h-4 w-4 text-brand-primary focus:ring-brand-primary border-gray-300"
-                          // Add onChange to handle selection state if you build full quiz logic
                         />
                         {option}
                       </label>
@@ -118,84 +130,98 @@ const LessonPage = () => {
             ))}
             {!isComplete(lesson.id) ? (
               <button
-                onClick={handleQuizSubmit}
+                onClick={handleGenericLessonCompletion} // Use generic completion for quiz for now
                 className="mt-6 bg-brand-primary text-white font-semibold py-2 px-4 rounded hover:bg-opacity-90"
               >
                 Submit Quiz (Mark as Complete)
               </button>
             ) : (
-              <p className="mt-6 text-green-600 font-semibold flex items-center"> {/* Added flex items-center for MUI icon alignment */}
-                <CheckCircleIcon className="mr-1" fontSize="small" /> {/* Using MUI Icon, adjusted class and added fontSize */}
+              <p className="mt-6 text-green-600 dark:text-green-400 font-semibold flex items-center">
+                <CheckCircleIconMUI className="mr-1" fontSize="small" />
                 Quiz Completed!
               </p>
             )}
           </div>
         );
-      default:
-        return <p>Unsupported lesson type.</p>;
+      
     }
   };
 
   return (
-    <div className="relative">
-      {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={isComplete(lesson.id) ? 150 : 50} />}
+    <div className="relative pb-16"> {/* Added padding-bottom for floating nav */}
+      {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={150} />}
       <div className="mb-4">
         <Link to={`/subjects/${subjectSlug}/chapters/${chapterSlug}`} className="text-sm text-brand-primary hover:underline">
-          ← Back to {chapter.name} {/* Changed arrow for consistency */}
+          ← Back to {chapter.name}
         </Link>
         <h1 className="text-3xl font-bold my-2 text-center">{lesson.name}</h1>
       </div>
 
       <motion.div
-        key={lesson.id}
+        key={lesson.id} // Ensures re-render & animation on lesson change
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
+        exit={{ opacity: 0, y: -20 }} // Optional: for transitions between lessons
         transition={{ duration: 0.4 }}
         className="mb-8"
       >
         {renderLessonContent()}
       </motion.div>
 
-      {/* --- Navigation Buttons --- */}
-      {/* If you are NOT using the LessonNavigation component, keep this block: */}
-      <div className="flex justify-between items-center mt-10 max-w-3xl mx-auto">
+      {isComplete(lesson.id) && (
+        <p className="text-center mt-6 mb-4 text-green-600 dark:text-green-400 font-semibold flex items-center justify-center">
+          <CheckCircleIconMUI className="mr-1" fontSize="small" />
+          Lesson Completed!
+        </p>
+      )}
+
+      {/* --- Navigation Buttons (Improved for clarity) --- */}
+      <div className="flex justify-between items-center mt-10 max-w-3xl mx-auto px-4">
         {prevLesson ? (
           <Link
             to={`/subjects/${subjectSlug}/chapters/${chapterSlug}/lessons/${prevLesson.slug}`}
-            className="flex items-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors"
+            className="flex items-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md"
+            title={`Previous: ${prevLesson.name}`}
           >
             <ArrowLeftIcon className="h-5 w-5 mr-2" />
             Previous
           </Link>
-        ) : <div /> /* Placeholder for spacing */}
+        ) : <div className="w-1/3" /> /* Placeholder for spacing, ensures Next button aligns right if no Prev */}
+        
+        {/* "Mark as Complete" button for text/video if not auto-completed, or if user wants to re-confirm */}
+        {/* This is an example if you don't want auto-completion for text/video */}
+        {/* {(lesson.type === 'text' || lesson.type === 'video') && !isComplete(lesson.id) && (
+          <button
+            onClick={handleGenericLessonCompletion}
+            className="bg-brand-secondary text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md mx-auto"
+          >
+            Mark as Complete
+          </button>
+        )} */}
+
         {nextLesson ? (
           <Link
             to={`/subjects/${subjectSlug}/chapters/${chapterSlug}/lessons/${nextLesson.slug}`}
-            className="flex items-center bg-brand-primary hover:bg-opacity-90 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+            className="flex items-center bg-brand-primary hover:bg-opacity-90 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md"
+            title={`Next: ${nextLesson.name}`}
           >
             Next
             <ArrowRightIcon className="h-5 w-5 ml-2" />
           </Link>
-        ) : <div /> /* Placeholder for spacing */}
+        ) : (
+          // If no next lesson, but current lesson is complete, offer to go back to chapter
+          isComplete(lesson.id) ? (
+            <Link
+              to={`/subjects/${subjectSlug}/chapters/${chapterSlug}`}
+              className="flex items-center bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors shadow hover:shadow-md"
+              title={`Back to chapter: ${chapter.name}`}
+            >
+              Back to Chapter
+              {/* <ArrowRightIcon className="h-5 w-5 ml-2" /> // Optional: use a different icon like a list icon */}
+            </Link>
+          ) : <div className="w-1/3" /> /* Placeholder if not complete and no next lesson */
+        )}
       </div>
-      {/* --- End of Navigation Buttons Block --- */}
-
-      {/* OR, if you ARE using the LessonNavigation component: */}
-      {/* <LessonNavigation
-        subjectSlug={subjectSlug}
-        chapterSlug={chapterSlug}
-        prevLesson={prevLesson}
-        nextLesson={nextLesson}
-      /> */}
-
-
-      {isComplete(lesson.id) && (
-        <p className="text-center mt-4 text-green-600 dark:text-green-400 font-semibold flex items-center justify-center"> {/* Added flex for MUI icon alignment */}
-          <CheckCircleIcon className="mr-1" fontSize="small" /> {/* Using MUI Icon */}
-          Lesson Completed!
-        </p>
-      )}
     </div>
   );
 };
