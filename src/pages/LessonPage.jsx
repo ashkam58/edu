@@ -8,7 +8,6 @@ import { useProgress } from '../contexts/ProgressContext'; // Adjust path if nee
 import Confetti from 'react-confetti';
 import useWindowSize from 'react-use/lib/useWindowSize';
 import NotFoundPage from './NotFoundPage';
-import Sparkle from 'react-sparkle'; // npm install react-sparkle
 
 // Heroicons for navigation
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
@@ -17,7 +16,36 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 import CheckCircleIconMUI from '@mui/icons-material/CheckCircle'; // Renamed to avoid conflict if you use Heroicons CheckCircleIcon
 // If you haven't installed Material-UI icons yet: npm install @mui/material @emotion/react @emotion/styled @mui/icons-material
 
-
+const SparkleOverlay = ({ show }) => {
+  if (!show) return null;
+  // 12 sparkles, random positions and delays
+  return (
+    <div className="pointer-events-none fixed inset-0 z-20">
+      {[...Array(12)].map((_, i) => (
+        <span
+          key={i}
+          className="absolute rounded-full bg-yellow-300 opacity-70"
+          style={{
+            width: `${8 + Math.random() * 16}px`,
+            height: `${8 + Math.random() * 16}px`,
+            top: `${Math.random() * 90}%`,
+            left: `${Math.random() * 90}%`,
+            animation: `sparkle-fade 1.2s ${Math.random()}s ease-out forwards`
+          }}
+        />
+      ))}
+      <style>
+        {`
+          @keyframes sparkle-fade {
+            0% { opacity: 0; transform: scale(0.5);}
+            30% { opacity: 1; transform: scale(1.2);}
+            100% { opacity: 0; transform: scale(0.7);}
+          }
+        `}
+      </style>
+    </div>
+  );
+};
 
 const LessonPage = () => {
   const { subjectSlug, chapterSlug, lessonSlug } = useParams();
@@ -175,9 +203,7 @@ const LessonPage = () => {
 
       {showConfetti && <Confetti width={width} height={height} recycle={false} numberOfPieces={150} />}
       {/* Sparkle effect when lesson is complete */}
-      {isComplete(lesson.id) && (
-        <Sparkle color="gold" count={30} minSize={7} maxSize={18} fadeOutSpeed={15} overflowPx={0} />
-      )}
+      <SparkleOverlay show={isComplete(lesson.id)} />
 
       {/* Animated mascot and motivational message */}
       <motion.div
