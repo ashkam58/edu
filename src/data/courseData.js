@@ -346,6 +346,149 @@ export const subjects = [
             `
           }
         ]
+      },
+      {
+        id: 'math-kindergarten-numbers',
+        name: 'Number Spelling & Skip Counting (Kindergarten)',
+        slug: 'number-spelling-skip-counting',
+        description: 'Learn to spell numbers up to twenty and skip count by 2 with Ayan!',
+        lessons: [
+          {
+            id: 'kgn-l1',
+            name: 'Let’s Spell Numbers!',
+            slug: 'lets-spell-numbers',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Let’s Spell Numbers!</h2>
+              <p>Let’s learn to spell numbers from 1 to 20. Say them out loud with Ayan!</p>
+              <ul class="list-disc ml-6">
+                <li>1 - one</li>
+                <li>2 - two</li>
+                <li>3 - three</li>
+                <li>4 - four</li>
+                <li>5 - five</li>
+                <li>6 - six</li>
+                <li>7 - seven</li>
+                <li>8 - eight</li>
+                <li>9 - nine</li>
+                <li>10 - ten</li>
+                <li>11 - eleven</li>
+                <li>12 - twelve</li>
+                <li>13 - thirteen</li>
+                <li>14 - fourteen</li>
+                <li>15 - fifteen</li>
+                <li>16 - sixteen</li>
+                <li>17 - seventeen</li>
+                <li>18 - eighteen</li>
+                <li>19 - nineteen</li>
+                <li>20 - twenty</li>
+              </ul>
+              <div class="mt-2 font-bold text-green-700">Trick: Numbers ending with "teen" are from 13 to 19!</div>
+            `
+          },
+          {
+            id: 'kgn-l2',
+            name: 'Skip Counting by 2',
+            slug: 'skip-counting-by-2',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Skip Counting by 2</h2>
+              <p>Let’s count by 2s with Ayan! Say the numbers together:</p>
+              <p class="font-bold text-blue-700">2, 4, 6, 8, 10, 12, 14, 16, 18, 20</p>
+              <div class="mt-2 font-bold text-green-700">Trick: Every number is just 2 more than the last one!</div>
+            `
+          },
+          {
+            id: 'kgn-l3',
+            name: 'Ayan’s Number Spelling Word Problems',
+            slug: 'ayan-number-spelling-word-problems',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Ayan’s Number Spelling Word Problems</h2>
+              <ul class="list-disc ml-6">
+                <li>Ayan has <b>five</b> apples. How do you spell the number of apples he has?</li>
+                <li>Ayan saw <b>eight</b> ducks at the pond. Spell the number of ducks.</li>
+                <li>Ayan’s friend gave him <b>twelve</b> balloons. Spell the number of balloons.</li>
+                <li>Ayan counted <b>seventeen</b> stars. Spell the number of stars.</li>
+                <li>Ayan has <b>twenty</b> crayons. Spell the number of crayons.</li>
+              </ul>
+            `
+          },
+          {
+            id: 'kgn-l4',
+            name: 'Drills: Spell the Number!',
+            slug: 'drills-spell-the-number',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Drills: Spell the Number!</h2>
+              <ol class="list-decimal ml-6">
+                <li>Spell 3</li>
+                <li>Spell 7</li>
+                <li>Spell 11</li>
+                <li>Spell 14</li>
+                <li>Spell 18</li>
+                <li>Spell 20</li>
+                <li>Spell 1</li>
+                <li>Spell 9</li>
+                <li>Spell 16</li>
+                <li>Spell 13</li>
+              </ol>
+              <div class="mt-2 font-bold text-green-700">Trick: Practice writing and saying each number!</div>
+            `
+          },
+          {
+            id: 'kgn-l5',
+            name: 'Drills: Skip Counting by 2!',
+            slug: 'drills-skip-counting-2',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Drills: Skip Counting by 2!</h2>
+              <ol class="list-decimal ml-6">
+                <li>What comes after 2 if we skip count by 2?</li>
+                <li>What comes after 6 if we skip count by 2?</li>
+                <li>What comes after 12 if we skip count by 2?</li>
+                <li>What comes after 16 if we skip count by 2?</li>
+                <li>Fill in the blanks: 2, __, 6, __, 10</li>
+                <li>Fill in the blanks: 12, __, 16, __, 20</li>
+                <li>Say all the numbers from 2 to 20, skipping by 2!</li>
+              </ol>
+              <div class="mt-2 font-bold text-green-700">Trick: Use your fingers to help you count by 2s!</div>
+            `
+          },
+          {
+            id: 'kgn-l6',
+            name: 'Worksheet: Number Spelling & Skip Counting',
+            slug: 'worksheet-number-spelling-skip-counting',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Worksheet: Number Spelling & Skip Counting</h2>
+              <ol class="list-decimal ml-6">
+                <li>Write the spelling for 4, 10, 15, 19, and 20.</li>
+                <li>Circle all the "teen" numbers and write their spellings.</li>
+                <li>Fill in the blanks: 2, __, 6, __, 10, __, 14, __, 18, __</li>
+                <li>How do you spell the number of fingers on both your hands?</li>
+                <li>Ayan has 2 red balls, 2 blue balls, and 2 green balls. How many balls does he have in total? (Spell the answer!)</li>
+                <li>Write all the numbers from 1 to 20 and their spellings.</li>
+              </ol>
+              <div class="mt-2 font-bold text-blue-700">Practice makes you a number spelling and skip counting star!</div>
+            `
+          },
+          {
+            id: 'kgn-l7',
+            name: 'Quiz: Number Spelling & Skip Counting',
+            slug: 'quiz-number-spelling-skip-counting',
+            type: 'quiz',
+            questions: [
+              { q: 'How do you spell 7?', options: ['seven', 'sevin', 'saven', 'sevven'], correctAnswer: 'seven' },
+              { q: 'What comes after 8 if you skip count by 2?', options: ['9', '10', '12', '11'], correctAnswer: '10' },
+              { q: 'How do you spell 15?', options: ['fiveteen', 'fifteen', 'fivteen', 'fiften'], correctAnswer: 'fifteen' },
+              { q: 'What comes after 14 if you skip count by 2?', options: ['15', '16', '18', '12'], correctAnswer: '16' },
+              { q: 'How do you spell 20?', options: ['twenty', 'twentee', 'twanty', 'twanty'], correctAnswer: 'twenty' },
+              { q: 'How do you spell 11?', options: ['eleven', 'elaven', 'elevan', 'elven'], correctAnswer: 'eleven' },
+              { q: 'What comes after 18 if you skip count by 2?', options: ['19', '20', '22', '16'], correctAnswer: '20' }
+            ]
+          }
+        ]
       }
     ],
   },
