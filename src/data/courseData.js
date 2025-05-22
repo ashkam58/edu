@@ -223,6 +223,129 @@ export const subjects = [
                 ]
             }
         ]
+      },
+      {
+        id: 'math-percentages',
+        name: 'Mastering Percentages',
+        slug: 'mastering-percentages',
+        description: 'Become a percentage pro with Sajeev and friends! Learn, practice, and master every trick.',
+        lessons: [
+          {
+            id: 'mp-l1',
+            name: 'What is a Percentage?',
+            slug: 'what-is-a-percentage',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">What is a Percentage?</h2>
+              <p>A <span class="highlight highlight-blue">percentage</span> is a way to express a number as a part of 100. The symbol for percent is <b>%</b>.</p>
+              <p>For example, <b>25%</b> means 25 out of 100.</p>
+              <ul class="list-disc ml-6 mt-2">
+                <li>50% means half</li>
+                <li>100% means the whole thing</li>
+                <li>0% means nothing</li>
+              </ul>
+            `
+          },
+          {
+            id: 'mp-l2',
+            name: 'Converting Between Fractions, Decimals, and Percentages',
+            slug: 'converting-fractions-decimals-percentages',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Converting Between Fractions, Decimals, and Percentages</h2>
+              <ul class="list-disc ml-6">
+                <li><b>Fraction to Percentage:</b> Multiply by 100 and add %.<br>Example: <b>3/4 × 100 = 75%</b></li>
+                <li><b>Decimal to Percentage:</b> Move the decimal two places right and add %.<br>Example: <b>0.6 = 60%</b></li>
+                <li><b>Percentage to Decimal:</b> Move the decimal two places left.<br>Example: <b>45% = 0.45</b></li>
+              </ul>
+              <div class="mt-2 font-bold text-green-700">Trick: To find 10% of a number, just move the decimal one place left!</div>
+            `
+          },
+          {
+            id: 'mp-l3',
+            name: 'Finding a Percentage of a Number',
+            slug: 'finding-percentage-of-number',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Finding a Percentage of a Number</h2>
+              <p>To find <b>X%</b> of a number, multiply the number by X and divide by 100.</p>
+              <p><b>Example:</b> What is 30% of 80?</p>
+              <p>80 × 30 ÷ 100 = <b>24</b></p>
+              <div class="mt-2 font-bold text-green-700">Trick: To find 50%, just halve the number. For 25%, halve it twice!</div>
+            `
+          },
+          {
+            id: 'mp-l4',
+            name: 'Personalized Word Problems',
+            slug: 'personalized-word-problems',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Word Problems with Sajeev and Friends</h2>
+              <ul class="list-disc ml-6">
+                <li><b>Sajeev</b> scored 80% in his math test. If the test was out of 50 marks, how many marks did he get?<br>
+                  <span class="text-blue-600">Solution: 50 × 80 ÷ 100 = <b>40 marks</b></span>
+                </li>
+                <li><b>Saindhavi</b> read 60% of her 120-page book. How many pages did she read?<br>
+                  <span class="text-blue-600">Solution: 120 × 60 ÷ 100 = <b>72 pages</b></span>
+                </li>
+                <li><b>Sanketh</b> has 200 marbles. He gave 25% to Srinika. How many marbles did Srinika get?<br>
+                  <span class="text-blue-600">Solution: 200 × 25 ÷ 100 = <b>50 marbles</b></span>
+                </li>
+                <li><b>Sanvika</b> finished 75% of her homework. If she had 16 questions, how many did she finish?<br>
+                  <span class="text-blue-600">Solution: 16 × 75 ÷ 100 = <b>12 questions</b></span>
+                </li>
+                <li><b>Samanvita</b> spent 40% of her pocket money of ₹500. How much did she spend?<br>
+                  <span class="text-blue-600">Solution: 500 × 40 ÷ 100 = <b>₹200</b></span>
+                </li>
+              </ul>
+            `
+          },
+          {
+            id: 'mp-l5',
+            name: 'Drills: Practice Makes Perfect!',
+            slug: 'percentage-drills',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Drills: Practice Makes Perfect!</h2>
+              <ol class="list-decimal ml-6">
+                <li>Find 20% of 150</li>
+                <li>What is 15% of 80?</li>
+                <li>Convert 0.35 to a percentage</li>
+                <li>Write 3/5 as a percentage</li>
+                <li>What is 60% of 90?</li>
+                <li>If Sajeev got 90% in a 40-mark test, how many marks did he get?</li>
+                <li>Saindhavi spent 30% of her 300 rupees. How much did she spend?</li>
+                <li>Sanketh read 80% of a 250-page book. How many pages did he read?</li>
+                <li>Srinika finished 50% of her 18 questions. How many did she finish?</li>
+                <li>Sanvika gave away 25% of her 64 candies. How many did she give?</li>
+              </ol>
+              <div class="mt-3 font-bold text-green-700">Trick: For quick 10% or 5% calculations, break the number into easy parts!</div>
+            `
+          },
+          {
+            id: 'mp-l6',
+            name: 'Worksheet: Master Percentages!',
+            slug: 'percentage-worksheet',
+            type: 'text',
+            content: `
+              <h2 class="font-bold text-lg mb-2">Worksheet: Master Percentages!</h2>
+              <ol class="list-decimal ml-6">
+                <li>Find 12% of 250</li>
+                <li>What is 75% of 44?</li>
+                <li>Convert 0.08 to a percentage</li>
+                <li>Write 7/10 as a percentage</li>
+                <li>What is 90% of 60?</li>
+                <li>If Sajeev scored 60% in a 80-mark test, how many marks did he get?</li>
+                <li>Saindhavi spent 55% of her 400 rupees. How much did she spend?</li>
+                <li>Sanketh read 40% of a 120-page book. How many pages did he read?</li>
+                <li>Srinika finished 25% of her 32 questions. How many did she finish?</li>
+                <li>Sanvika gave away 10% of her 90 candies. How many did she give?</li>
+                <li>Samanvita saved 30% of her ₹600 pocket money. How much did she save?</li>
+              </ol>
+              <div class="mt-3 font-bold text-blue-700">Remember: Practice these with a notebook. Check your answers and try to do them mentally!</div>
+            `
+          }
+        ]
       }
     ],
   },

@@ -101,7 +101,7 @@ const HeroSection = () => {
           className="text-5xl md:text-7xl lg:text-8xl font-extrabold mb-6 drop-shadow-xl text-yellow-300 dark:text-indigo-300"
           style={{ fontFamily: "'Lilita One', cursive" }}
         >
-          LearnSphere!
+          Ashkam Online Classes
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
